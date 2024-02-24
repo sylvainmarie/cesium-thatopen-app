@@ -11,13 +11,14 @@ import {
   Viewer,
   PerspectiveFrustum,
   createOsmBuildingsAsync,
+  TrustedServers,
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import * as THREE from "three";
 import * as OBC from "openbim-components";
 import { CesiumCamera } from "./cesium-camera";
 import "./App.css";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 function App() {
   useEffect(() => {
@@ -114,6 +115,7 @@ function App() {
       };
 
       const Polygon = viewer.entities.add(entity);
+      Polygon.show = true; // Set to false to hide the polygon
 
       // Geometry
       const _3Dobjects: Object3D[] = []; //Could be any Three.js object mesh
