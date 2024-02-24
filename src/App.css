@@ -563,6 +563,11 @@ html {
 .container {
   width: 100%;
 }
+#root {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+}
 
 .viewer {
   position: absolute;

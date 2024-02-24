@@ -21,6 +21,11 @@ import React, { useEffect } from "react";
 
 function App() {
   useEffect(() => {
+    const container = document.getElementById("cesiumContainer");
+    if (!container || container.childNodes.length > 0) {
+      // Assume the viewer is already initialized if there are child nodes
+      return;
+    }
     async function setupViewer() {
       // Init CESIUM
 
