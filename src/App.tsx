@@ -11,7 +11,6 @@ import {
   Viewer,
   PerspectiveFrustum,
   createOsmBuildingsAsync,
-  TrustedServers,
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import * as THREE from "three";
