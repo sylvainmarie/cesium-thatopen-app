@@ -7,8 +7,10 @@ A simple demo to show and test how to use Cesium together with That Open Engine 
 ## Dependencies
 
 - [Cesium](https://cesium.com/)
-- [That Open Engine](https://docs.thatopen.com/)
+- [Three.js](https://github.com/mrdoob/three.js)
+- [Open-BIMcomponents](https://docs.thatopen.com/)
 - [React](https://reactjs.org/)
+- [ReactDOM](https://reactjs.org/)
 
 ## Developer Guide
 
