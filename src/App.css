@@ -12,6 +12,11 @@
   background-color: transparent;
 }
 
+/* hide cesium elements */
+.cesium-viewer-animationContainer, .cesium-viewer-timelineContainer, .cesium-viewer-bottom, .cesium-viewer-fullscreenContainer, .cesium-viewer-toolbar {
+  display: none !important;
+}
+
 /* ! tailwindcss v3.3.3 | MIT License | https://tailwindcss.com */
 
 /*
