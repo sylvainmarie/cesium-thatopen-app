@@ -179,7 +179,7 @@ function App() {
         camera.fov = CesiumMath.toDegrees(perspectiveFrustum.fovy); // ThreeJS FOV is vertical
         camera.updateProjectionMatrix();
 
-        var cartToVec = function (cart: any) {
+        const cartToVec = function (cart: any) {
           return new THREE.Vector3(cart.x, cart.y, cart.z);
         };
 
