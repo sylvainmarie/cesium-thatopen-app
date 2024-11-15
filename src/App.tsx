@@ -4,13 +4,15 @@ win.CESIUM_BASE_URL = "/Cesium";
 
 import {
   Cartesian3,
+  Cartographic,
+  Color,
+  createOsmBuildingsAsync,
   Ion,
   Math as CesiumMath,
-  Terrain,
-  Color,
-  Viewer,
   PerspectiveFrustum,
-  createOsmBuildingsAsync,
+  Terrain,
+  sampleTerrain,
+  Viewer
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import * as THREE from "three";
@@ -125,6 +127,15 @@ function App() {
         maxWGS84: number[];
       };
 
+      // Ge the altitude to where to insert the IFC model
+      const pointOfInterest = Cartographic.fromDegrees((minWGS84[0] + maxWGS84[0]) / 2, (minWGS84[1] + maxWGS84[1]) / 2,
+        5000, new Cartographic());
+      let altitude = 0;
+      sampleTerrain(viewer.terrainProvider, 11, [pointOfInterest])
+        .then(function(samples) {
+          altitude = samples[0].height;
+      });
+
       // Load IFC
       const ifcLoader = new OBC.FragmentIfcLoader(components);
       const file = await fetch("small.ifc");
@@ -133,7 +144,7 @@ function App() {
       const model = await ifcLoader.load(buffer, "example");
       for (const child of model.children) {
         child.rotation.x = Math.PI / 2;
-        child.position.z += 65;
+        child.position.z += altitude;
       }
       scene.add(model);
 
