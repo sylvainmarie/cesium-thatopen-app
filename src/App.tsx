@@ -33,9 +33,13 @@ function App() {
 
       // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
       const viewer = new Viewer("cesiumContainer", {
+        maximumRenderTimeChange : Infinity, // See https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/
         terrain: Terrain.fromWorldTerrain(),
         useDefaultRenderLoop: false,
+        requestRenderMode : true
       });
+      viewer.scene.debugShowFramesPerSecond = true;
+
       // Your access token can be found at: https://ion.cesium.com/tokens.
       // This is the default access token from your ion account
       const cesiumAccessToken = import.meta.env.VITE_CESIUM_ACCESS_TOKEN;
