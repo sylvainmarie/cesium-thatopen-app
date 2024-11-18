@@ -16,8 +16,7 @@ import {
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import * as THREE from "three";
-import * as OBC from "openbim-components";
-import { CesiumCamera } from "./cesium-camera";
+import * as OBC from "@thatopen/components";
 import "./App.css";
 import { useEffect } from "react";
 
@@ -77,28 +76,37 @@ function App() {
         "ThreeContainer"
       ) as HTMLElement;
       const components = new OBC.Components();
-      components.scene = new OBC.SimpleScene(components);
-      components.renderer = new OBC.SimpleRenderer(components, ThreeContainer, {
-        alpha: true,
-      });
-      components.camera = new CesiumCamera(components);
-      components.raycaster = new OBC.SimpleRaycaster(components);
+      const worlds = components.get(OBC.Worlds);
+
+      const world = worlds.create<
+        OBC.SimpleScene,
+        OBC.OrthoPerspectiveCamera,
+        OBC.SimpleRenderer
+      >();
+      world.name = "Main";
+
+      world.scene = new OBC.SimpleScene(components);
+      world.scene.setup();
+      world.scene.three.background = null;
+
+      world.renderer = new OBC.SimpleRenderer(components, ThreeContainer);
+  
+      world.camera = new OBC.OrthoPerspectiveCamera(components);
+
+      const resizeWorld = () => {
+        world.renderer?.resize();
+        world.camera.updateAspect();
+      };
+      ThreeContainer.addEventListener("resize", resizeWorld);
       components.init();
 
-      const sceneComp = components.scene as OBC.SimpleScene;
-      sceneComp.setup();
-
-      const scene = sceneComp.get();
-      scene.background = null;
-
-      const camera = components.camera.get() as THREE.PerspectiveCamera;
+      const camera = world.camera.controls.camera as THREE.PerspectiveCamera;
       camera.fov = 45;
       const width = window.innerWidth;
       const height = window.innerHeight;
       camera.aspect = width / height;
       camera.near = 1;
       camera.far = 10 * 1000 * 1000;
-      const renderer = components.renderer as OBC.SimpleRenderer;
 
       // Init 3D objects in both libraries
       //Cesium entity
@@ -141,16 +149,17 @@ function App() {
       });
 
       // Load IFC
-      const ifcLoader = new OBC.FragmentIfcLoader(components);
+      const ifcLoader = components.get(OBC.IfcLoader);
+      await ifcLoader.setup();
       const file = await fetch("small.ifc");
-      const data = await file.arrayBuffer();
-      const buffer = new Uint8Array(data);
-      const model = await ifcLoader.load(buffer, "example");
+      const buffer = await file.arrayBuffer();
+      const data = new Uint8Array(buffer);
+      const model = await ifcLoader.load(data);
       for (const child of model.children) {
         child.rotation.x = Math.PI / 2;
         child.position.z += altitude;
       }
-      scene.add(model);
+      world.scene.three.add(model);
 
       window.onkeydown = (event) => {
         if (event.code === "KeyZ") {
@@ -181,7 +190,7 @@ function App() {
 
       // Animate
 
-      renderer.onBeforeUpdate.add(() => {
+      world.renderer.onBeforeUpdate.add(() => {
         viewer.render();
 
         const width = window.innerWidth;
