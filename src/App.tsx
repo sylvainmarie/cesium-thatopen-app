@@ -203,7 +203,7 @@ function App() {
         camera.fov = CesiumMath.toDegrees(perspectiveFrustum.fovy); // ThreeJS FOV is vertical
         camera.updateProjectionMatrix();
 
-        const cartToVec = function (cart: any) {
+        const cartToVec = function (cart: Cartesian3) {
           return new THREE.Vector3(cart.x, cart.y, cart.z);
         };
 
@@ -249,8 +249,8 @@ function App() {
         // Clone Cesium Camera projection position so the
         // Three.js Object will appear to be at the same place as above the Cesium Globe
         camera.matrixAutoUpdate = false;
-        var cvm = viewer.camera.viewMatrix;
-        var civm = viewer.camera.inverseViewMatrix;
+        const cvm = viewer.camera.viewMatrix;
+        const civm = viewer.camera.inverseViewMatrix;
 
         camera.matrixWorld.set(
           civm[0],
