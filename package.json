@@ -10,17 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "cesium": "^1.122.0",
-    "@thatopen/components": "~2.3.0",
-    "@thatopen/components-front": "~2.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "three": "^0.160.0"
+    "cesium": "^1.124.0",
+    "@thatopen/components": "~2.4.0",
+    "@thatopen/components-front": "~2.4.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "three": "^0.160.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.56",
-    "@types/react-dom": "^18.2.19",
-    "@types/three": "^0.161.2",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/three": "^0.170.0",
     "@typescript-eslint/eslint-plugin": "7.2.0",
     "@typescript-eslint/parser": "7.2.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
