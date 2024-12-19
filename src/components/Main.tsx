@@ -34,7 +34,7 @@ export const Content = () => {
       const viewer = new Viewer("cesiumContainer", {
         maximumRenderTimeChange : Infinity, // See https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/
         useDefaultRenderLoop: false,
-        requestRenderMode : true
+        requestRenderMode : true // render Cesium on demand
       });
       viewer.scene.debugShowFramesPerSecond = true;
       const worldTerrain = await createWorldTerrainAsync();
@@ -88,7 +88,7 @@ export const Content = () => {
 
       world.scene = new OBC.SimpleScene(components);
       world.scene.setup();
-      world.scene.three.background = null;
+      world.scene.three.background = null; // See Cesium through the ThreeJS layer
 
       world.renderer = new OBC.SimpleRenderer(components, ThreeContainer);
   
@@ -192,7 +192,7 @@ export const Content = () => {
       // Animate
 
       world.renderer.onBeforeUpdate.add(() => {
-        viewer.render();
+        viewer.render(); // Render Cesium explicitly
 
         const width = window.innerWidth;
         const height = window.innerHeight;
