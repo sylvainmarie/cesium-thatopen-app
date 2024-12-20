@@ -38,7 +38,11 @@ export const Content = () => {
       });
       viewer.scene.debugShowFramesPerSecond = true;
       const worldTerrain = await createWorldTerrainAsync();
-      viewer.scene.terrainProvider = worldTerrain;
+      viewer.scene.terrainProvider = worldTerrain; // register terrain elevation data
+
+      viewer.scene.screenSpaceCameraController.inertiaSpin = 0;
+      viewer.scene.screenSpaceCameraController.inertiaTranslate = 0;
+      viewer.scene.screenSpaceCameraController.inertiaZoom = 0;
 
       // Your access token can be found at: https://ion.cesium.com/tokens.
       // This is the default access token from your ion account
@@ -63,14 +67,13 @@ export const Content = () => {
         500
       );
 
-      viewer.camera.flyTo({
+      viewer.camera.setView({
         destination: center,
         orientation: {
           heading: CesiumMath.toRadians(0),
           pitch: CesiumMath.toRadians(-60),
           roll: CesiumMath.toRadians(0),
-        },
-        duration: 3,
+        }
       });
       // Init Components
       const ThreeContainer = document.getElementById(
