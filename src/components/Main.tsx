@@ -32,8 +32,8 @@ export const Content = () => {
 
       // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
       const viewer = new Viewer("cesiumContainer", {
-        maximumRenderTimeChange : Infinity, // See https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/
-        useDefaultRenderLoop: false,
+        maximumRenderTimeChange : Infinity, //  no elements of the scene change with simulation time, See https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/
+        useDefaultRenderLoop: true, // the widget will use requestAnimationFrame to perform rendering and resizing of the widget, as well as drive the simulation clock. If set to false, you must manually call the resize, render methods 
         requestRenderMode : true // render Cesium on demand
       });
       viewer.scene.debugShowFramesPerSecond = true;
@@ -95,6 +95,8 @@ export const Content = () => {
 
       world.renderer = new OBC.SimpleRenderer(components, ThreeContainer);
   
+      components.enabled = false; // Avoid OBC default rendering loop
+
       world.camera = new OBC.OrthoPerspectiveCamera(components);
 
       const resizeWorld = () => {
@@ -102,7 +104,6 @@ export const Content = () => {
         world.camera.updateAspect();
       };
       ThreeContainer.addEventListener("resize", resizeWorld);
-      components.init();
 
       const camera = world.camera.controls.camera as THREE.PerspectiveCamera;
       camera.fov = 45;
@@ -165,6 +166,13 @@ export const Content = () => {
       }
       world.scene.three.add(model);
 
+      viewer.camera.percentageChanged = 0.001;
+      viewer.camera.changed.addEventListener(function() {
+        console.log("Cesium camera changed, should update OBC");
+
+        world.renderer?.update();
+      });
+
       window.onkeydown = (event) => {
         if (event.code === "KeyZ") {
           for (const child of model.children) {
@@ -181,6 +189,7 @@ export const Content = () => {
         }
         model.updateMatrix();
         model.updateWorldMatrix(true, true);
+        world.renderer?.update();
       };
 
       //Assign Three.js object mesh to our object array
@@ -192,16 +201,13 @@ export const Content = () => {
 
       _3Dobjects.push(ifcObject);
 
-      // Animate
-
       world.renderer.onBeforeUpdate.add(() => {
-        viewer.render(); // Render Cesium explicitly
 
         const width = window.innerWidth;
         const height = window.innerHeight;
         camera.aspect = width / height;
 
-        //  register Three.js scene with Cesium
+        //  Match the Three.js scene with Cesium
         const perspectiveFrustum = viewer.camera.frustum as PerspectiveFrustum;
         if (!perspectiveFrustum.fovy === undefined) return;
         const fovy = perspectiveFrustum.fovy as number; 
