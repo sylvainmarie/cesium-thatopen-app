@@ -3,6 +3,7 @@ const win = window as any;
 win.CESIUM_BASE_URL = "/Cesium";
 
 import {
+  Camera,
   Cartesian3,
   Cartographic,
   Color,
@@ -11,6 +12,7 @@ import {
   Ion,
   Math as CesiumMath,
   PerspectiveFrustum,
+  Rectangle,
   sampleTerrain,
   Viewer
 } from "cesium";
@@ -31,10 +33,21 @@ export const Content = () => {
       // Init CESIUM
 
       // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+
+      // Define the Home position 
+      const extent = Rectangle.fromDegrees(-5.996332484651805, 37.388948626088755, -5.994808990075886, 37.38832634224693);
+      Camera.DEFAULT_VIEW_RECTANGLE = extent;
+      Camera.DEFAULT_VIEW_FACTOR = 0;
+      
       const viewer = new Viewer("cesiumContainer", {
         maximumRenderTimeChange : Infinity, //  no elements of the scene change with simulation time, See https://cesium.com/blog/2018/01/24/cesium-scene-rendering-performance/
         useDefaultRenderLoop: true, // the widget will use requestAnimationFrame to perform rendering and resizing of the widget, as well as drive the simulation clock. If set to false, you must manually call the resize, render methods 
-        requestRenderMode : true // render Cesium on demand
+        requestRenderMode : true, // render Cesium on demand
+        animation : false,
+        infoBox : false,
+        sceneModePicker : false,
+        skyBox : false,
+        timeline : false
       });
       viewer.scene.debugShowFramesPerSecond = true;
       const worldTerrain = await createWorldTerrainAsync();
@@ -201,6 +214,7 @@ export const Content = () => {
 
       _3Dobjects.push(ifcObject);
 
+      // Adjust the ThreeJS camera to match the underlying Cesium camera 
       world.renderer.onBeforeUpdate.add(() => {
 
         const width = window.innerWidth;
