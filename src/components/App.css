@@ -13,7 +13,7 @@
 }
 
 /* hide cesium elements */
-.cesium-viewer-animationContainer, .cesium-viewer-timelineContainer, .cesium-viewer-bottom, .cesium-viewer-fullscreenContainer, .cesium-viewer-toolbar {
+.cesium-viewer-bottom {
   display: none !important;
 }
 
