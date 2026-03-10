@@ -29,6 +29,7 @@ export const Content = () => {
       // Assume the viewer is already initialized if there are child nodes
       return;
     }
+
     async function setupViewer() {
       // Init CESIUM
 
@@ -88,7 +89,8 @@ export const Content = () => {
           roll: CesiumMath.toRadians(0),
         }
       });
-      // Init Components
+
+      // Init ThatOpen Components
       const ThreeContainer = document.getElementById(
         "ThreeContainer"
       ) as HTMLElement;
@@ -104,11 +106,11 @@ export const Content = () => {
 
       world.scene = new OBC.SimpleScene(components);
       world.scene.setup();
-      world.scene.three.background = null; // See Cesium through the ThreeJS layer
+      world.scene.three.background = null; // In order to see Cesium rendering through the ThreeJS layer
 
       world.renderer = new OBC.SimpleRenderer(components, ThreeContainer);
   
-      components.enabled = false; // Avoid OBC default rendering loop
+      components.enabled = false; // Disable the OBC default rendering loop
 
       world.camera = new OBC.OrthoPerspectiveCamera(components);
 
@@ -126,9 +128,8 @@ export const Content = () => {
       camera.near = 1;
       camera.far = 10 * 1000 * 1000;
 
-      // Init 3D objects in both libraries
-      //Cesium entity
-      const entity = {
+      // Init a Polygon in Cesium
+      const polygonSpecs = {
         name: "Polygon",
         polygon: {
           hierarchy: Cartesian3.fromDegreesArray([
@@ -145,7 +146,7 @@ export const Content = () => {
         },
       };
 
-      const Polygon = viewer.entities.add(entity);
+      const Polygon = viewer.entities.add(polygonSpecs);
       Polygon.show = true; // Set to false to hide the polygon
 
       // Geometry
@@ -157,7 +158,7 @@ export const Content = () => {
         maxWGS84: number[];
       };
 
-      // Ge the altitude to where to insert the IFC model
+      // Query the TerrainProvider for the altitude at the point of interest. This will be used to position the IFC model on the terrain.
       const pointOfInterest = Cartographic.fromDegrees((minWGS84[0] + maxWGS84[0]) / 2, (minWGS84[1] + maxWGS84[1]) / 2,
         5000, new Cartographic());
       let altitude = 0;
@@ -181,7 +182,7 @@ export const Content = () => {
 
       viewer.camera.percentageChanged = 0.001;
       viewer.camera.changed.addEventListener(function() {
-        console.log("Cesium camera changed, should update OBC");
+        console.log("Cesium camera changed, should update the @ThatOpen/OBC camera");
 
         world.renderer?.update();
       });
@@ -221,16 +222,12 @@ export const Content = () => {
         const height = window.innerHeight;
         camera.aspect = width / height;
 
-        //  Match the Three.js scene with Cesium
+        //  Match the Cesium perspective
         const perspectiveFrustum = viewer.camera.frustum as PerspectiveFrustum;
         if (!perspectiveFrustum.fovy === undefined) return;
         const fovy = perspectiveFrustum.fovy as number; 
         camera.fov = CesiumMath.toDegrees(fovy); // ThreeJS FOV is vertical
         camera.updateProjectionMatrix();
-
-        const cartToVec = function (cart: Cartesian3) {
-          return new THREE.Vector3(cart.x, cart.y, cart.z);
-        };
 
         // Configure Three.js meshes to stand against globe center position up direction
         for (const id in _3Dobjects) {
@@ -253,6 +250,10 @@ export const Content = () => {
             centerHigh.y,
             centerHigh.z
           );
+
+          const cartToVec = function (cart: Cartesian3) {
+            return new THREE.Vector3(cart.x, cart.y, cart.z);
+          };
 
           // use direction from bottom left to top left as up-vector
           const bottomLeft = cartToVec(
